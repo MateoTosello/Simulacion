@@ -174,7 +174,46 @@ def dalembert_strategy(initial_bet, cant_tiradas, initial_capital, num_elegido):
 
 
 def fibonacci_strategy(initial_bet, cant_tiradas, initial_capital, capital):
-    print("Fibonacci")
+    actual_capital = initial_capital
+    actual_bet = initial_bet
+    previous_bet = 0
+
+    for i in range(cant_tiradas):
+        print(i)
+        if actual_bet <= actual_capital:
+            valor = ruleta()
+            if valor in negro:
+                print("gano")
+                actual_capital += actual_bet
+                print("previa bet antes: ", previos_bet)
+                print("actual bet antes: ", actual_bet)
+                actual_bet -= previos_bet
+                previos_bet -= actual_bet
+                print("previa bet: ", previos_bet)
+                print("actual bet: ", actual_bet)
+                print("actual capital: ", actual_capital)
+                if previos_bet < 0:
+                    previos_bet = 0
+                    actual_bet = betArray[0]
+            else:
+                print("perdio")
+                actual_capital -= actual_bet
+                aux = previos_bet
+                print("aux: ", aux)
+                previos_bet = actual_bet
+                actual_bet += aux
+                print("previa bet: ", previos_bet)
+                print("actual bet: ", actual_bet)
+                print("actual capital: ", actual_capital)
+        else:
+            print("Te quedaste seco")
+            return
+
+    # if (i == cant_tiradas-1): i=cant_tiradas
+    # print("Luego de ",i," tiradas, el balance es: ",balance)
+    return
+    # Terminar
+    # print("Fibonacci")
     # balanceArray = []
     # betArray = []
     # balanceArray.append(initial_capital)
@@ -198,6 +237,9 @@ def fibonacci_strategy(initial_bet, cant_tiradas, initial_capital, capital):
     #             print("previa bet: ", previos_bet)
     #             print("actual bet: ", actual_bet)
     #             print("actual capital: ", actual_capital)
+    #             if previos_bet < 0:
+    #               previos_bet=0
+    #               actual_bet = betArray[0]
     #         else:
     #             print("perdio")
     #             actual_capital -= actual_bet
@@ -208,11 +250,6 @@ def fibonacci_strategy(initial_bet, cant_tiradas, initial_capital, capital):
     #             print("previa bet: ", previos_bet)
     #             print("actual bet: ", actual_bet)
     #             print("actual capital: ", actual_capital)
-
-    #         if previos_bet:
-    #             print("Entro aca")
-    #             actual_bet = betArray[0]
-    #             previos_bet = 0
     #     else:
     #         print("Te quedaste seco")
     #         return
