@@ -1,16 +1,18 @@
 import math
 import random
 import sys
+import matplotlib as mpl
 import numpy as np
 import matplotlib.pyplot as plt
 
 # Ruleta
 
+
 def ruleta():
     valor = random.randint(0, 36)
     return valor
 
-# Gráfica
+# Grafica
 
 
 def grafica_balance(balanceArray, i, strategy_name):
@@ -20,15 +22,19 @@ def grafica_balance(balanceArray, i, strategy_name):
              balanceArray, label='Flujo de ganancia', color='blue')
     if balanceArray[0] == 0:
         plt.title('Gráfico de ganancia neta - Corrida ' + str(i+1) + ' - Tiradas: ' +
-              str(len(balanceArray)-1)+' - Estrategia ' + strategy_name)
-        plt.axhline(balanceArray[0], color='red', linestyle='--',linewidth=2, label='Balance cero')
-        plt.axhline(balanceArray[-1], color='green', linestyle=':',linewidth=2, label='Balance final')
+                  str(len(balanceArray)-1)+' - Estrategia ' + strategy_name)
+        plt.axhline(balanceArray[0], color='red',
+                    linestyle='--', linewidth=2, label='Balance cero')
+        plt.axhline(balanceArray[-1], color='green',
+                    linestyle=':', linewidth=2, label='Balance final')
     else:
         plt.title('Gráfico de flujo de capital - Corrida ' + str(i+1) + ' - Tiradas: ' +
-              str(len(balanceArray)-1)+' - Estrategia ' + strategy_name)
-        plt.axhline(balanceArray[0], color='red', linestyle='--',linewidth=2, label='Capital inicial')
-        plt.axhline(balanceArray[-1], color='green', linestyle=':',linewidth=2, label='Capital final')
-    
+                  str(len(balanceArray)-1)+' - Estrategia ' + strategy_name)
+        plt.axhline(balanceArray[0], color='red',
+                    linestyle='--', linewidth=2, label='Capital inicial')
+        plt.axhline(balanceArray[-1], color='green',
+                    linestyle=':', linewidth=2, label='Capital final')
+
     plt.xlabel('Número de tirada')
     plt.ylabel('Cantidad de ganancia')
 
@@ -42,7 +48,7 @@ def grafica_balance(balanceArray, i, strategy_name):
 
 
 def grafica_resumen_balances(balancesArray, i, strategy_name):
-
+    mpl.style.use("default")
     plt.figure(figsize=(10, 6))
     nro_tiradas_eje_x = [x for x in range(cant_tiradas+1)]
     cant_max_tiradas = len(balancesArray[0])
@@ -50,23 +56,24 @@ def grafica_resumen_balances(balancesArray, i, strategy_name):
         if cant_max_tiradas < len(balancesArray[i]):
             cant_max_tiradas = len(balancesArray[i])
         plt.plot(nro_tiradas_eje_x[:len(balancesArray[i])],
-                 balancesArray[i], label='Flujo de ganancia', color='blue')
+                 balancesArray[i], label='Flujo de ganancia', color='C'+str(i % 10+1))
     plt.axhline(0, color='red', linestyle='--',
                 linewidth=2, label='Balance cero')
     plt.xlabel('Número de tirada')
     plt.ylabel('Cantidad de ganancia')
-    plt.title('Gráfico de ganancia neta - Corrida ' + str(i+1) + ' - Tiradas: ' +
-              str(len(balancesArray))+' - Estrategia ' + strategy_name)
+    plt.title('Gráfico de ganancia neta - Cantidad de Corridas ' + str(i+1) + ' - Tiradas máximas: ' +
+              str(cant_max_tiradas-1)+' - Estrategia ' + str(strategy_name))
     plt.legend()
     plt.grid(True)
     # Límites del eje x de tirada 1 a la 10
-    plt.xlim(1, len(balanceArray))
+    plt.xlim(1, cant_max_tiradas-1)
     # Guardar la figura en disco
-    plt.savefig('balance_corrida_'+str(i+1)+'.png')
+    plt.savefig('balance_resumen.png')
     plt.show()  # Mostrar la figura
 
-
 # Estrategias
+
+
 def martingala_strategy(initial_bet, cant_tiradas, initial_capital, capital):
     balanceArray = []
     betArray = []
@@ -218,10 +225,10 @@ def simulate_game(strategy, initial_bet, cant_tiradas, cant_corridas, initial_ca
         balanceArray = resultados[0]
         betArray = resultados[1]
 
-        balancesArray.apprend(balanceArray)
+        balancesArray.append(balanceArray)
 
         grafica_balance(balanceArray, i, strategy_name)
-        grafica_resumen_balances(balancesArray, i, strategy_name)
+    grafica_resumen_balances(balancesArray, i, strategy_name)
 
 
 # Inicio del programa
@@ -249,21 +256,16 @@ initial_bet = int(input("Ingrese la apuesta inicial: "))
 
 if (estrategia) == "m":
     # Simulación de la estrategia de Martingala
-    simulate_game(martingala_strategy, initial_bet, cant_tiradas, cant_corridas, initial_capital, capital, "Martin Gala")
+    simulate_game(martingala_strategy, initial_bet, cant_tiradas,
+                  cant_corridas, initial_capital, capital, "Martin Gala")
 elif (estrategia) == "d":
     # Simulación de la estrategia de D'Alembert
-    simulate_game(dalembert_strategy, initial_bet, cant_tiradas, cant_corridas, initial_capital, capital, "D'Alembert")
+    simulate_game(dalembert_strategy, initial_bet, cant_tiradas,
+                  cant_corridas, initial_capital, capital, "D'Alembert")
 elif (estrategia) == "f":
     # Simulación de la estrategia de Fibonacci
-<<<<<<< HEAD
     simulate_game(fibonacci_strategy, initial_bet, cant_tiradas,
                   cant_corridas, initial_capital, capital, "Fibonacci")
-else:
-    print("else")
-    simulate_game(paroli_strategy, initial_bet,
-                  cant_tiradas, cant_corridas, initial_capital, capital, "Nosotros")
-=======
-    simulate_game(fibonacci_strategy, initial_bet, cant_tiradas, cant_corridas, initial_capital, capital, "Fibonacci")
 elif (estrategia) == "o":
-    simulate_game(paroli_strategy, initial_bet, cant_tiradas, cant_corridas, initial_capital, capital, "Nosotros")
->>>>>>> 2b5261c4bf57be7e141a8cf3c0b58866d72d0a03
+    simulate_game(paroli_strategy, initial_bet, cant_tiradas,
+                  cant_corridas, initial_capital, capital, "Paroli")
