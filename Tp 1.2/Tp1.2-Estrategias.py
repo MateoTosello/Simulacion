@@ -63,230 +63,81 @@ def martingala_strategy(initial_bet, cant_tiradas, initial_capital, capital):
 
     return balanceArray, betArray
 
-# Martin Gala vieja
-#     balanceArray = []
-#     betArray = []
-#     balanceArray.append(initial_capital)
-#     betArray.append(initial_bet)
-#     actual_bet = betArray[0]
-#     actual_capital = balanceArray[0]
-#     actual_capital = initial_capital
-#     actual_bet = initial_bet
-#     for i in range(cant_tiradas):
 
-#         if actual_bet <= actual_capital:
-#             print("tirada: ", i)
-#             print("bet: ", actual_bet)
-#             print("capital: ", actual_capital)
-#             valor = ruleta()
-#             actual_capital -= actual_bet
-#             if valor in negro:
-#                 actual_capital += actual_bet * 2
-#                 actual_bet = initial_bet
-#             else:
-#                 actual_bet = actual_bet * 2
-
-#         else:
-#             print("Te quedaste seco")
-#             return
-
-#             # # Final de la funcion
-#             # return actual_capital
-
-
-def dalembert_strategy(initial_bet, cant_tiradas, initial_capital, num_elegido):
-
-    actual_capital = initial_capital
-    actual_bet = initial_bet
-    unidadBase = 10
+def dalembert_strategy(initial_bet, cant_tiradas, initial_capital, capital):
+    balanceArray = []
+    betArray = []
+    if capital == "a":
+        balanceArray.append(initial_capital)
+    else:
+        balanceArray.append(0)
+    betArray.append(initial_bet)
+    unidadBase = initial_bet
 
     for i in range(cant_tiradas):
-        if actual_bet <= actual_capital:
+        print("Bet: ", betArray[i])
+        if betArray[i] <= balanceArray[i]:
             valor = ruleta()
-            actual_capital -= actual_bet
-            print("tirada: ", i)
-            print("bet: ", actual_bet)
-            print("capital: ", actual_capital)
             if valor in negro:
-                actual_capital += actual_bet * 2
+                print("Gano")
+                balanceArray.append(balanceArray[i] + betArray[i])
                 # para que no llegue a apuesta 0 en caso de ganar
-                if (actual_bet-unidadBase) < unidadBase:
-                    actual_bet = unidadBase
+                if (betArray[i]-unidadBase) < unidadBase:
+                    betArray.append(unidadBase)
                 else:
-                    actual_bet -= unidadBase
+                    betArray.append(betArray[i] - unidadBase)
 
             else:
-                actual_bet += unidadBase
-
+                print("Perdio")
+                balanceArray.append(balanceArray[i] - betArray[i])
+                betArray.append(betArray[i] + unidadBase)
+            print(balanceArray)
         else:
             print("Te quedaste seco")
-            return
+            balanceArray.append(0)
+            break
 
-        # Final de la funcion
-        return actual_capital
-
-
-# def fibonacci_logic(balanceArray, betArray):
-#     actual_bet = betArray[0]
-#     actual_capital = balanceArray[0]
-#     previos_bet = 0
-#     for i in range(cant_tiradas):
-#         if actual_bet <= actual_capital:
-#             valor = ruleta()
-#             actual_capital -= actual_bet
-#             if valor in negro:
-#                 actual_capital += actual_bet * 2
-#                 if actual_bet < previos_bet:
-#                     actual_bet = betArray[0]
-#                     previos_bet = 0
-#                 else:
-#                     actual_bet -= previos_bet
-#                     previos_bet -= actual_bet
-#             else:
-#                 aux = previos_bet
-#                 previos_bet = actual_bet
-#                 actual_bet += aux
-#         else:
-#             print("Te quedaste seco")
-#             return
-        # if betArray[i] <= balanceArray[i]:
-        #     valor = ruleta()
-
-        #     print("tirada: ", i, "--------------------------------------------------------------------------")
-        #     print("bet: ", betArray[i])
-        #     print("capital: ", balanceArray[i+1])
-        #     if valor in negro:
-        #         print("Ganada")
-        #         balanceArray[i+1] = balanceArray[i] + betArray[i]
-        #         print("actual", actual_bet)
-        #         print("previa", previos_bet)
-        #         actual_bet -= previos_bet
-        #         previos_bet -= actual_bet
-        #         print("actual", actual_bet)
-        #         print("previa", previos_bet)
-        #     else:
-        #         aux = previos_bet
-        #         previos_bet = actual_bet
-        #         actual_bet += aux
-        # else:
-        #     print("Te quedaste seco")
-        #     return
+    return balanceArray, betArray
 
 
 def fibonacci_strategy(initial_bet, cant_tiradas, initial_capital, capital):
-    actual_capital = initial_capital
-    actual_bet = initial_bet
-    previous_bet = 0
-
+    balanceArray = []
+    betArray = []
+    if capital == "a":
+        balanceArray.append(initial_capital)
+    else:
+        balanceArray.append(0)
+    betArray.append(initial_bet)
+    valores = [0, initial_bet, initial_bet]
     for i in range(cant_tiradas):
         print(i)
-        if actual_bet <= actual_capital:
+        print("Array: ", valores)
+        if valores[1] <= balanceArray[i]:
             valor = ruleta()
             if valor in negro:
-                print("gano")
-                actual_capital += actual_bet
-                print("previa bet antes: ", previos_bet)
-                print("actual bet antes: ", actual_bet)
-                actual_bet -= previos_bet
-                previos_bet -= actual_bet
-                print("previa bet: ", previos_bet)
-                print("actual bet: ", actual_bet)
-                print("actual capital: ", actual_capital)
-                if previos_bet < 0:
-                    previos_bet = 0
-                    actual_bet = betArray[0]
+                print("Gano")
+                balanceArray.append(balanceArray[i] + valores[1])
+                if valores[0] == 0 or valores[0] == initial_bet:
+                    valores = [0, initial_bet, initial_bet]
+                else:
+                    prevant = valores[0]
+                    actant = valores[1]
+                    act = actant-prevant
+                    valores = [prevant-act, act, prevant]
             else:
-                print("perdio")
-                actual_capital -= actual_bet
-                aux = previos_bet
-                print("aux: ", aux)
-                previos_bet = actual_bet
-                actual_bet += aux
-                print("previa bet: ", previos_bet)
-                print("actual bet: ", actual_bet)
-                print("actual capital: ", actual_capital)
+                print("Perdio")
+                balanceArray.append(balanceArray[i] - valores[1])
+                actant = valores[1]
+                posant = valores[2]
+                valores = [actant, posant, actant+posant]
+
+            print("Capital: ", balanceArray)
         else:
             print("Te quedaste seco")
-            return
+            balanceArray.append(0)
+            break
 
-    # if (i == cant_tiradas-1): i=cant_tiradas
-    # print("Luego de ",i," tiradas, el balance es: ",balance)
-    return
-    # Terminar
-    # print("Fibonacci")
-    # balanceArray = []
-    # betArray = []
-    # balanceArray.append(initial_capital)
-    # betArray.append(initial_bet)
-    # actual_bet = betArray[0]
-    # actual_capital = balanceArray[0]
-    # print("bet: ", actual_bet)
-    # print("capital: ", actual_capital)
-    # previos_bet = 0
-    # for i in range(cant_tiradas):
-    #     print(i)
-    #     if actual_bet <= actual_capital:
-    #         valor = ruleta()
-    #         if valor in negro:
-    #             print("gano")
-    #             actual_capital += actual_bet
-    #             print("previa bet antes: ", previos_bet)
-    #             print("actual bet antes: ", actual_bet)
-    #             actual_bet -= previos_bet
-    #             previos_bet -= actual_bet
-    #             print("previa bet: ", previos_bet)
-    #             print("actual bet: ", actual_bet)
-    #             print("actual capital: ", actual_capital)
-    #             if previos_bet < 0:
-    #               previos_bet=0
-    #               actual_bet = betArray[0]
-    #         else:
-    #             print("perdio")
-    #             actual_capital -= actual_bet
-    #             aux = previos_bet
-    #             print("aux: ", aux)
-    #             previos_bet = actual_bet
-    #             actual_bet += aux
-    #             print("previa bet: ", previos_bet)
-    #             print("actual bet: ", actual_bet)
-    #             print("actual capital: ", actual_capital)
-    #     else:
-    #         print("Te quedaste seco")
-    #         return
-
-    # if capital == "a":
-    #     balanceArray[0] = initial_capital
-    #     betArray[0] = initial_bet
-    #     fibonacci_logic(balanceArray, betArray)
-    # actual_capital = initial_capital
-    # actual_bet = initial_bet
-    # previos_bet = 0
-
-    # Logica Fibbonacci
-    # for i in range(cant_tiradas):
-    #     if actual_bet <= actual_capital:
-    #         valor = ruleta()
-    #         actual_capital -= actual_bet
-    #         print(
-    #             "tirada: ", i, "--------------------------------------------------------------------------")
-    #         print("bet: ", actual_bet)
-    #         print("capital: ", actual_capital)
-    #         if valor in negro:
-    #             print("Ganada")
-    #             actual_capital += actual_bet * 2
-    #             print("actual", actual_bet)
-    #             print("previa", previos_bet)
-    #             actual_bet -= previos_bet
-    #             previos_bet -= actual_bet
-    #             print("actual", actual_bet)
-    #             print("previa", previos_bet)
-    #         else:
-    #             aux = previos_bet
-    #             previos_bet = actual_bet
-    #             actual_bet += aux
-    #     else:
-    #         print("Te quedaste seco")
-    #         return
+    return balanceArray, betArray
 
 
 def propia_strategy(initial_bet, cant_tiradas, initial_capital, capital):
