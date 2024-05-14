@@ -140,13 +140,38 @@ def fibonacci_strategy(initial_bet, cant_tiradas, initial_capital, capital):
     return balanceArray, betArray
 
 
-def propia_strategy(initial_bet, cant_tiradas, initial_capital, capital):
-    actual_capital = initial_capital
-    for i in range(cant_tiradas):
-        print("Estrategia propia")
+def paroli_strategy(initial_bet, cant_tiradas, initial_capital, num_elegido):
+    balanceArray = []
+    betArray = []
+    if capital == "a":
+        balanceArray.append(initial_capital)
+    else:
+        balanceArray.append(0)
+    betArray.append(initial_bet)
+    balanceArray[i] = initial_capital
+    betArray[i] = initial_bet
 
-        # Final de la funcion
-        return actual_capital
+    for i in range(cant_tiradas):
+        if betArray[i] <= balanceArray[i]:
+            valor = ruleta()
+            if valor in negro:
+                print("Gano")
+                balanceArray.append(balanceArray[i] + betArray[i])
+
+                betArray.append(betArray[i]*2)
+
+            else:
+                print("Perdio")
+                balanceArray.append(balanceArray[i] - betArray[i])
+
+                betArray[i] = initial_bet
+            print(balanceArray)
+        else:
+            print("Te quedaste seco")
+            balanceArray.append(0)
+            break
+
+    return balanceArray, betArray
 
 
 def simulate_game(strategy, initial_bet, cant_tiradas, cant_corridas, initial_capital, capital, strategy_name):
