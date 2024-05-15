@@ -18,33 +18,34 @@ def ruleta():
 def grafica_balance(balanceArray, i, strategy_name):
 
     plt.figure(figsize=(10, 6))
-    plt.plot(range(0, len(balanceArray)),
-             balanceArray, label='Flujo de ganancia', color='blue')
+
     if balanceArray[0] == 0:
-        plt.title('Gráfico de ganancia neta - Corrida ' + str(i+1) + ' - Tiradas: ' +
+        plt.plot(range(0, len(balanceArray)),
+            balanceArray, label='Flujo de ganancia', color='blue')
+        plt.title('Gráfico de flujo de ganancia - Corrida ' + str(i+1) + ' - Tiradas: ' +
                   str(len(balanceArray)-1)+' - Estrategia ' + strategy_name)
         plt.axhline(balanceArray[0], color='red',
                     linestyle='--', linewidth=2, label='Balance cero')
         plt.axhline(balanceArray[-1], color='green',
                     linestyle=':', linewidth=2, label='Balance final')
+        plt.ylabel('Ganancia')
     else:
+        plt.plot(range(0, len(balanceArray)),
+            balanceArray, label='Flujo de capital', color='blue')
         plt.title('Gráfico de flujo de capital - Corrida ' + str(i+1) + ' - Tiradas: ' +
                   str(len(balanceArray)-1)+' - Estrategia ' + strategy_name)
         plt.axhline(balanceArray[0], color='red',
                     linestyle='--', linewidth=2, label='Capital inicial')
         plt.axhline(balanceArray[-1], color='green',
                     linestyle=':', linewidth=2, label='Capital final')
+        plt.ylabel('Capital')
 
     plt.xlabel('Número de tirada')
-    plt.ylabel('Cantidad de ganancia')
-
     plt.legend()
     plt.grid(True)
-    # Límites del eje x de tirada 1 a la 10
     plt.xlim(0, len(balanceArray))
-    # Guardar la figura en disco
     plt.savefig('balance_corrida_'+str(i+1)+'.png')
-    plt.show()  # Mostrar la figura
+    plt.show() 
 
 
 def grafica_resumen_balances(balancesArray, i, strategy_name):
@@ -55,24 +56,37 @@ def grafica_resumen_balances(balancesArray, i, strategy_name):
     for i in range(len(balancesArray)):
         if cant_max_tiradas < len(balancesArray[i]):
             cant_max_tiradas = len(balancesArray[i])
-        plt.plot(nro_tiradas_eje_x[:len(balancesArray[i])],
-                 balancesArray[i], label='Flujo de ganancia', color='C'+str(i % 10+1))
-    plt.axhline(0, color='red', linestyle='--',
-                linewidth=2, label='Balance cero')
-    plt.xlabel('Número de tirada')
-    plt.ylabel('Cantidad de ganancia')
-    plt.title('Gráfico de ganancia neta - Cantidad de Corridas ' + str(i+1) + ' - Tiradas máximas: ' +
+        if balancesArray[0][0]==0:
+            plt.plot(nro_tiradas_eje_x[:len(balancesArray[i])],
+                 balancesArray[i], label='Flujo de ganancia corrida '+str(i+1), color='C'+str(i % 10+1))
+            plt.axhline(balancesArray[i][-1], color='C'+str(i % 10+1),
+                linestyle=':', linewidth=2) #, label='Balance final corrida '+str(i+1))
+        else:  
+            plt.plot(nro_tiradas_eje_x[:len(balancesArray[i])],
+                 balancesArray[i], label='Flujo de capital corrida '+str(i+1), color='C'+str(i % 10+1))
+            plt.axhline(balancesArray[i][-1], color='C'+str(i % 10+1),
+                linestyle=':', linewidth=2) #, label='Capital final corrida '+str(i+1))
+    
+    if balancesArray[0][0]==0:
+        plt.axhline(0, color='red', linestyle='--', linewidth=2, label='Balance cero')
+        plt.ylabel('Ganancia')
+        plt.title('Gráfico de flujo de ganancia - Cantidad de Corridas ' + str(i+1) + ' - Tiradas máximas: ' +
               str(cant_max_tiradas-1)+' - Estrategia ' + str(strategy_name))
+    else:
+        plt.axhline(balancesArray[0][0], color='red', linestyle='--', linewidth=2, label='Capital inicial')
+        plt.ylabel('Capital')
+        plt.title('Gráfico de flujo de capital - Cantidad de Corridas ' + str(i+1) + ' - Tiradas máximas: ' +
+              str(cant_max_tiradas-1)+' - Estrategia ' + str(strategy_name))
+        
+   
+    plt.xlabel('Número de tirada')
     plt.legend()
     plt.grid(True)
-    # Límites del eje x de tirada 1 a la 10
-    plt.xlim(1, cant_max_tiradas-1)
-    # Guardar la figura en disco
+    plt.xlim(0, cant_max_tiradas-1)
     plt.savefig('balance_resumen.png')
-    plt.show()  # Mostrar la figura
+    plt.show() 
 
 # Estrategias
-
 
 def martingala_strategy(initial_bet, cant_tiradas, initial_capital, capital):
     balanceArray = []
