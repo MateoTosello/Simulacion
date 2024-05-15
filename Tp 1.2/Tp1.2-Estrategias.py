@@ -162,13 +162,36 @@ def grafica_frec_relativa_colores(valores, i, num_elegido, strategy_name):
 #     plt.savefig('frec_abs_corrida_'+str(i+1)+'.png')
 #     plt.show()
 
-# Estrategias
 
+def grafica_frec_rel(frecRelPorTiradaArray,i, color_elegido, strategy_name):
+    frec_rel_esperada = 18/37
+    print(color_elegido)
+    plt.figure(figsize=(10, 3))    
+    
+    if(color_elegido=='rojo'):
+        plt.bar(range(1,len(frecRelPorTiradaArray)+1),frecRelPorTiradaArray,color="red",label="Frecuencia relativa" )
+    elif(color_elegido=='negro'):
+        plt.bar(range(1,len(frecRelPorTiradaArray)+1),frecRelPorTiradaArray,color="black",label="Frecuencia relativa" )
+    
+    plt.axhline(frec_rel_esperada, color='blue', linestyle='--', linewidth=2, label='Frecuencia Relativa Esperado')
+    plt.xlabel('Número de tirada')
+    plt.ylabel('Frecuencia relativa')
+    plt.title('Gráfico de frecuencia relativa - Corrida '+str(i+1)+' - Tiradas: '+str(len(frecRelPorTiradaArray))+' - Estrategia '+strategy_name)
+    plt.legend()
+    plt.xlim(0, len(frecRelPorTiradaArray)+1)
+    plt.savefig('frec_rel_corrida_'+str(i+1)+'.png') # Guardar la figura en disco
+    plt.show() # Mostrar la figura
+
+
+# Estrategias
 
 def martingala_strategy(initial_bet, cant_tiradas, initial_capital, capital):
     balanceArray = []
     betArray = []
     valores = []
+    frecRelPorTiradaArray=[]
+    frec_abs = 0
+    
     if capital == "a":
         balanceArray.append(initial_capital)
     else:
@@ -186,7 +209,7 @@ def martingala_strategy(initial_bet, cant_tiradas, initial_capital, capital):
                 print()
                 balanceArray.append(balanceArray[i] + betArray[i])
                 betArray.append(betArray[0])
-
+                frec_abs += 1
             else:
                 print("Perdio")
                 print()
@@ -196,13 +219,19 @@ def martingala_strategy(initial_bet, cant_tiradas, initial_capital, capital):
         else:
             print("Te quedaste seco")
             break
+        
+        frecRelPorTiradaArray.append(frec_abs/(i+1))
 
-    return balanceArray, betArray, valores
+    return balanceArray, betArray, valores, frecRelPorTiradaArray
 
 
 def dalembert_strategy(initial_bet, cant_tiradas, initial_capital, capital):
     balanceArray = []
     betArray = []
+    valores = []
+    frecRelPorTiradaArray=[]
+    frec_abs = 0
+    
     if capital == "a":
         balanceArray.append(initial_capital)
     else:
@@ -214,8 +243,10 @@ def dalembert_strategy(initial_bet, cant_tiradas, initial_capital, capital):
         print("Bet: ", betArray[i])
         if betArray[i] <= balanceArray[i]:
             valor = ruleta()
+            valores.append(valor)
             if valor in color:
                 print("Gano")
+                frec_abs += 1
                 balanceArray.append(balanceArray[i] + betArray[i])
                 # para que no llegue a apuesta 0 en caso de ganar
                 if (betArray[i]-unidadBase) < unidadBase:
@@ -230,68 +261,80 @@ def dalembert_strategy(initial_bet, cant_tiradas, initial_capital, capital):
             print(balanceArray)
         else:
             print("Te quedaste seco")
-            balanceArray.append(0)
             break
-
-    return balanceArray, betArray
+        
+        frecRelPorTiradaArray.append(frec_abs/(i+1))
+        print(frecRelPorTiradaArray)
+    return balanceArray, betArray, valores, frecRelPorTiradaArray
 
 
 def fibonacci_strategy(initial_bet, cant_tiradas, initial_capital, capital):
     balanceArray = []
     betArray = []
+    valores = []
+    frecRelPorTiradaArray=[]
+    frec_abs = 0
+    
     if capital == "a":
         balanceArray.append(initial_capital)
     else:
         balanceArray.append(0)
     betArray.append(initial_bet)
-    valores = [0, initial_bet, initial_bet]
+    valoresfib = [0, initial_bet, initial_bet]
     for i in range(cant_tiradas):
         print(i)
-        print("Array: ", valores)
-        if valores[1] <= balanceArray[i]:
+        print("Array: ", valoresfib)
+        if valoresfib[1] <= balanceArray[i]:
             valor = ruleta()
+            valores.append(valor)
             if valor in color:
                 print("Gano")
-                balanceArray.append(balanceArray[i] + valores[1])
-                if valores[0] == 0 or valores[0] == initial_bet:
-                    valores = [0, initial_bet, initial_bet]
+                frec_abs += 1
+                balanceArray.append(balanceArray[i] + valoresfib[1])
+                if valoresfib[0] == 0 or valoresfib[0] == initial_bet:
+                    valoresfib = [0, initial_bet, initial_bet]
                 else:
-                    prevant = valores[0]
-                    actant = valores[1]
+                    prevant = valoresfib[0]
+                    actant = valoresfib[1]
                     act = actant-prevant
-                    valores = [prevant-act, act, prevant]
+                    valoresfib = [prevant-act, act, prevant]
             else:
                 print("Perdio")
-                balanceArray.append(balanceArray[i] - valores[1])
-                actant = valores[1]
-                posant = valores[2]
-                valores = [actant, posant, actant+posant]
+                balanceArray.append(balanceArray[i] - valoresfib[1])
+                actant = valoresfib[1]
+                posant = valoresfib[2]
+                valoresfib = [actant, posant, actant+posant]
 
             print("Capital: ", balanceArray)
         else:
             print("Te quedaste seco")
-            balanceArray.append(0)
             break
-
-    return balanceArray, betArray
+        
+        frecRelPorTiradaArray.append(frec_abs/(i+1))
+        
+    return balanceArray, betArray, valores, frecRelPorTiradaArray
 
 
 def paroli_strategy(initial_bet, cant_tiradas, initial_capital, capital):
     balanceArray = []
     betArray = []
+    valores = []
+    frecRelPorTiradaArray=[]
+    frec_abs = 0
+    
     if capital == "a":
         balanceArray.append(initial_capital)
     else:
         balanceArray.append(0)
     betArray.append(initial_bet)
-    balanceArray[i] = initial_capital
-    betArray[i] = initial_bet
 
     for i in range(cant_tiradas):
-        if betArray[i] <= balanceArray[i]:
+        if betArray[i] <= balanceArray[i] or balanceArray[0] == 0:
             valor = ruleta()
+            valores.append(valor)
             if valor in color:
                 print("Gano")
+                frec_abs += 1
                 balanceArray.append(balanceArray[i] + betArray[i])
 
                 betArray.append(betArray[i]*2)
@@ -300,14 +343,15 @@ def paroli_strategy(initial_bet, cant_tiradas, initial_capital, capital):
                 print("Perdio")
                 balanceArray.append(balanceArray[i] - betArray[i])
 
-                betArray[i] = initial_bet
+                betArray.append(initial_bet)
             print(balanceArray)
         else:
             print("Te quedaste seco")
-            balanceArray.append(0)
             break
+        
+        frecRelPorTiradaArray.append(frec_abs/(i+1))
 
-    return balanceArray, betArray
+    return balanceArray, betArray, valores, frecRelPorTiradaArray
 
 
 def simulate_game(strategy, initial_bet, cant_tiradas, cant_corridas, initial_capital, capital, strategy_name, color_elegido):
@@ -319,11 +363,12 @@ def simulate_game(strategy, initial_bet, cant_tiradas, cant_corridas, initial_ca
         balanceArray = resultados[0]
         betArray = resultados[1]
         valores = resultados[2]
-
+        frecRelPorTiradaArray = resultados[3]
         balancesArray.append(balanceArray)
 
         grafica_balance(balanceArray, i, strategy_name)
         grafica_frec_relativa_colores(valores, i, color_elegido, strategy_name)
+        grafica_frec_rel(frecRelPorTiradaArray,i, color_elegido, strategy_name)
     grafica_resumen_balances(balancesArray, i, strategy_name)
 
 
