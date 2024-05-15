@@ -90,7 +90,7 @@ def grafica_resumen_balances(balancesArray, i, strategy_name):
     plt.show()
 
 
-# Diccionario de colores de la ruleta (ruleta europea)
+# Diccionario de colores de la ruleta(ruleta europea)
 color_mapping = {
     0: 'green', 1: 'red', 2: 'black', 3: 'red', 4: 'black', 5: 'red', 6: 'black', 7: 'red', 8: 'black',
     9: 'red', 10: 'black', 11: 'black', 12: 'red', 13: 'black', 14: 'red', 15: 'black', 16: 'red',
@@ -286,7 +286,7 @@ def dalembert_strategy(initial_bet, cant_tiradas, initial_capital, capital):
 
     for i in range(cant_tiradas):
         print("Bet: ", betArray[i])
-        if betArray[i] <= balanceArray[i]:
+        if betArray[i] <= balanceArray[i] or balanceArray[0] == 0:
             valor = ruleta()
             valores.append(valor)
             if valor in color:
@@ -329,7 +329,7 @@ def fibonacci_strategy(initial_bet, cant_tiradas, initial_capital, capital):
     for i in range(cant_tiradas):
         print(i)
         print("Array: ", valoresfib)
-        if valoresfib[1] <= balanceArray[i]:
+        if betArray[i] <= balanceArray[i] or balanceArray[0] == 0:
             valor = ruleta()
             valores.append(valor)
             if valor in color:
@@ -343,12 +343,14 @@ def fibonacci_strategy(initial_bet, cant_tiradas, initial_capital, capital):
                     actant = valoresfib[1]
                     act = actant-prevant
                     valoresfib = [prevant-act, act, prevant]
+                betArray.append(valoresfib[1])
             else:
                 print("Perdio")
                 balanceArray.append(balanceArray[i] - valoresfib[1])
                 actant = valoresfib[1]
                 posant = valoresfib[2]
                 valoresfib = [actant, posant, actant+posant]
+                betArray.append[valoresfib[1]]
 
             print("Capital: ", balanceArray)
         else:
@@ -413,11 +415,11 @@ def simulate_game(strategy, initial_bet, cant_tiradas, cant_corridas, initial_ca
         balancesArray.append(balanceArray)
         resumenFrecRel.append(frecRelPorTiradaArray)
 
-        # grafica_balance(balanceArray, i, strategy_name)
-        # grafica_frec_relativa_colores(valores, i, color_elegido, strategy_name)
+        grafica_balance(balanceArray, i, strategy_name)
+        grafica_frec_relativa_colores(valores, i, color_elegido, strategy_name)
         grafica_frec_rel(frecRelPorTiradaArray, i,
                          color_elegido, strategy_name)
-    # grafica_resumen_balances(balancesArray, i, strategy_name)
+    grafica_resumen_balances(balancesArray, i, strategy_name)
     grafica_resumen_frec_rel(resumenFrecRel,  strategy_name)
 
 
