@@ -90,7 +90,7 @@ def grafica_resumen_balances(balancesArray, i, strategy_name):
     plt.show()
 
 
-# Diccionario de colores de la ruleta(ruleta europea)
+# Diccionario de colores de la ruleta (ruleta europea)
 color_mapping = {
     0: 'green', 1: 'red', 2: 'black', 3: 'red', 4: 'black', 5: 'red', 6: 'black', 7: 'red', 8: 'black',
     9: 'red', 10: 'black', 11: 'black', 12: 'red', 13: 'black', 14: 'red', 15: 'black', 16: 'red',
@@ -114,7 +114,7 @@ def calcular_frecuencia_relativa(conteo_colores, total):
     return frecuencia_relativa
 
 
-def grafica_frec_relativa_colores(valores, i, num_elegido, strategy_name):
+def grafica_frec_relativa_colores(valores, i, color_elegido, strategy_name):
     frec_rel_esperada_r_b = 18 / 37
     frec_rel_esperada_g = 1 / 37
     conteo_colores = contar_colores(valores)
@@ -125,24 +125,25 @@ def grafica_frec_relativa_colores(valores, i, num_elegido, strategy_name):
     colores = list(frecuencia_relativa.keys())
     frecuencias = list(frecuencia_relativa.values())
 
-    plt.figure(figsize=(8, 3))
+    plt.figure(figsize=(8, 4))
 
     plt.barh(colores, frecuencias, color=[
              'red', 'black', 'green'], edgecolor='black', alpha=1)
 
     plt.ylabel('Color')
     plt.xlabel('Frecuencia Relativa')
-    plt.title('Histograma de colores en la ruleta - Color elegido ' + str(num_elegido) +
+    plt.title('Histograma de colores en la ruleta - Color elegido: ' + str(color_elegido) +
               ' - Corrida ' + str(i+1) + ' - Tiradas: ' + str(total_valores) + ' - Estrategia ' + strategy_name)
     plt.axvline(frec_rel_esperada_r_b, color="blue",
-                linestyle="--", linewidth="2")
+                linestyle="--", linewidth="2", label='Frecuencia Relativa esperada rojo/negro')
     plt.axvline(frec_rel_esperada_g, color="orange",
-                linestyle="--", linewidth="2")
+                linestyle="--", linewidth="2", label='Frecuencia Relativa esperada verde')
+    plt.legend()
     plt.xlim(0, 1)  # La frecuencia relativa está entre 0 y 1
     plt.savefig('frec_relativa_colores_corrida_' + str(i+1) + '.png')
     plt.show()
 
-# def grafica_frec_relativa_colores(valores, i, num_elegido, strategy_name):
+# def grafica_frec_relativa_colores(valores, i, color_elegido, strategy_name):
 #     frec_rel_esperada_r_b = (18/37)
 #     frec_rel_esperada_g = (1/37)
 #     conteo_colores = contar_colores(valores)
@@ -160,7 +161,7 @@ def grafica_frec_relativa_colores(valores, i, num_elegido, strategy_name):
 
 #     plt.xlabel('Color')
 #     plt.ylabel('Frecuencia Relativa')
-#     plt.title('Histograma de colores en la ruleta - Color elegido ' + str(num_elegido) + ' - Corrida ' +
+#     plt.title('Histograma de colores en la ruleta - Color elegido ' + str(color_elegido) + ' - Corrida ' +
 #               str(i+1) + ' - Tiradas: ' + str(total_valores) + ' - Estrategia ' + strategy_name)
 #     plt.axhline(frec_rel_esperada_r_b, color="blue",
 #                 linestyle="--", linewidth="2")
@@ -178,13 +179,13 @@ def grafica_frec_rel(frecRelPorTiradaArray, i, color_elegido, strategy_name):
 
     if (color_elegido == 'rojo'):
         plt.bar(range(1, len(frecRelPorTiradaArray)+1),
-                frecRelPorTiradaArray, color="red", label="Frecuencia relativa")
+                frecRelPorTiradaArray, color="red", linewidth=5, label="Frecuencia relativa")
     elif (color_elegido == 'negro'):
         plt.bar(range(1, len(frecRelPorTiradaArray)+1),
-                frecRelPorTiradaArray, color="black", label="Frecuencia relativa")
+                frecRelPorTiradaArray, color="black", linewidth=5, label="Frecuencia relativa")
 
     plt.axhline(frec_rel_esperada, color='blue', linestyle='--',
-                linewidth=2, label='Frecuencia Relativa Esperado')
+                linewidth=2, label='Frecuencia Relativa esperada')
     plt.xlabel('Número de tirada')
     plt.ylabel('Frecuencia relativa')
     plt.title('Gráfico de frecuencia relativa - Corrida '+str(i+1)+' - Tiradas: ' +
@@ -199,30 +200,30 @@ def grafica_frec_rel(frecRelPorTiradaArray, i, color_elegido, strategy_name):
 def grafica_resumen_frec_rel(resumenFrecRel, strategy_name):
     frec_rel_esperada = 18/37
     mpl.style.use("default")
-    # plt.style.use('dark_background')
     plt.figure(figsize=(20, 10))
     nro_tiradas_eje_x = [x for x in range(cant_tiradas+1)]
     grosor = 3
+    cant_max_tiradas = len(resumenFrecRel[0])
     for i in range(len(resumenFrecRel)):
+        if cant_max_tiradas < len(resumenFrecRel[i]):
+            cant_max_tiradas = len(resumenFrecRel[i])
         plt.bar(nro_tiradas_eje_x[1:len(resumenFrecRel[i]) + 1],
                 resumenFrecRel[i],
                 label=f'Frecuencia relativa corrida {i + 1}',
                 edgecolor=f'C{i % 10}',  # Color del contorno
                 fill=False,  # Solo mostrar contorno
                 linewidth=(grosor),  # Ancho del contorno
-                # linewidth=2,
                 )
         grosor -= 0.5
         # plt.bar((nro_tiradas_eje_x[1:len(resumenFrecRel[i])+1]),
         #         resumenFrecRel[i], label='Frecuencia relativa corrida '+str(i+1), color='C'+str(i % 10+1), alpha=(1-(0.15*i)))
-    plt.axhline(frec_rel_esperada, color='blue', linestyle='--',
-                linewidth=2, label='Frecuencia Relativa Esperado')
+    plt.axhline(frec_rel_esperada, color='red', linestyle='--', label='Frecuencia Relativa esperada')
     plt.xlabel('Número de tirada')
     plt.ylabel('Frecuencia relativa')
     plt.title('Gráfico de frecuencia relativa - Corrida '+str(i+1)+' - Tiradas: ' +
               str(len(resumenFrecRel[i]))+' - Estrategia '+strategy_name)
     plt.legend()
-    plt.xlim(0, 101)
+    plt.xlim(0, cant_max_tiradas+1)
     # Guardar la figura en disco
     plt.savefig('resumen_frec_rel_corrida_'+str(i+1)+'.png')
     plt.show()  # Mostrar la figura
@@ -343,16 +344,13 @@ def fibonacci_strategy(initial_bet, cant_tiradas, initial_capital, capital):
                     actant = valoresfib[1]
                     act = actant-prevant
                     valoresfib = [prevant-act, act, prevant]
-                betArray.append(valoresfib[1])
             else:
                 print("Perdio")
                 balanceArray.append(balanceArray[i] - valoresfib[1])
                 actant = valoresfib[1]
                 posant = valoresfib[2]
                 valoresfib = [actant, posant, actant+posant]
-                betArray.append[valoresfib[1]]
-
-            print("Capital: ", balanceArray)
+            betArray.append(valoresfib[1])
         else:
             print("Te quedaste seco")
             break
@@ -424,8 +422,8 @@ def simulate_game(strategy, initial_bet, cant_tiradas, cant_corridas, initial_ca
 
 
 # Inicio del programa
-if len(sys.argv) != 13:
-    print("Uso: python Tp1.2-Estrategias.py -c <cant_tiradas> -n <corridas> -e <color_elegido> -s <estrategia(m/d/f/n)> -a <capital(i/a)> -v <nro_elegido>")
+if len(sys.argv) != 11:
+    print("Uso: python Tp1.2-Estrategias.py -c <cant_tiradas> -n <corridas> -e <color_elegido> -s <estrategia(m/d/f/n)> -a <capital(i/a)>")
     sys.exit(1)
 
 # Parámetros de la simulación
@@ -434,7 +432,6 @@ cant_corridas = int(sys.argv[4])
 color_elegido = sys.argv[6]
 estrategia = (sys.argv[8])
 capital = (sys.argv[10])
-num_elegido = (sys.argv[12])
 
 if color_elegido == "n":
     color = [2, 4, 6, 8, 10, 11, 13, 15, 17,
