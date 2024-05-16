@@ -4,6 +4,7 @@ import sys
 import matplotlib as mpl
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 # Ruleta
 
@@ -193,7 +194,13 @@ def grafica_frec_rel(frecRelPorTiradaArray, i, color_elegido, strategy_name):
     plt.legend()
     plt.xlim(0, len(frecRelPorTiradaArray)+1)
     # Guardar la figura en disco
-    plt.savefig('frec_rel_corrida_'+str(i+1)+'.png')
+    if capital == "i":
+        ruta = os.path.join(directorio_base, "martin_gala", "infinito",
+                            'resumen_frec_rel_corrida_'+str(i+1)+'.png')
+        plt.savefig(ruta)
+    else:
+        ruta = os.path.join(directorio_base, "martin_gala", "finito",
+                            'resumen_frec_rel_corrida_'+str(i+1)+'.png')
     plt.show()  # Mostrar la figura
 
 
@@ -217,7 +224,8 @@ def grafica_resumen_frec_rel(resumenFrecRel, strategy_name):
         grosor -= 0.5
         # plt.bar((nro_tiradas_eje_x[1:len(resumenFrecRel[i])+1]),
         #         resumenFrecRel[i], label='Frecuencia relativa corrida '+str(i+1), color='C'+str(i % 10+1), alpha=(1-(0.15*i)))
-    plt.axhline(frec_rel_esperada, color='red', linestyle='--', label='Frecuencia Relativa esperada')
+    plt.axhline(frec_rel_esperada, color='red', linestyle='--',
+                label='Frecuencia Relativa esperada')
     plt.xlabel('Número de tirada')
     plt.ylabel('Frecuencia relativa')
     plt.title('Gráfico de frecuencia relativa - Corrida '+str(i+1)+' - Tiradas: ' +
@@ -225,7 +233,14 @@ def grafica_resumen_frec_rel(resumenFrecRel, strategy_name):
     plt.legend()
     plt.xlim(0, cant_max_tiradas+1)
     # Guardar la figura en disco
-    plt.savefig('resumen_frec_rel_corrida_'+str(i+1)+'.png')
+    if capital == "i":
+        ruta = os.path.join(directorio_base, "martin_gala", "infinito",
+                            'resumen_frec_rel_corrida_'+str(i+1)+'estrategia__capital_.png')
+        plt.savefig(ruta)
+    else:
+        ruta = os.path.join(directorio_base, "martin_gala", "finito",
+                            'resumen_frec_rel_corrida_'+str(i+1)+'estrategia__capital_.png')
+        plt.savefig(ruta)
     plt.show()  # Mostrar la figura
 
 # Estrategias
@@ -413,12 +428,12 @@ def simulate_game(strategy, initial_bet, cant_tiradas, cant_corridas, initial_ca
         balancesArray.append(balanceArray)
         resumenFrecRel.append(frecRelPorTiradaArray)
 
-        grafica_balance(balanceArray, i, strategy_name)
-        grafica_frec_relativa_colores(valores, i, color_elegido, strategy_name)
+        # grafica_balance(balanceArray, i, strategy_name)
+        # grafica_frec_relativa_colores(valores, i, color_elegido, strategy_name)
         grafica_frec_rel(frecRelPorTiradaArray, i,
                          color_elegido, strategy_name)
-    grafica_resumen_balances(balancesArray, i, strategy_name)
-    grafica_resumen_frec_rel(resumenFrecRel,  strategy_name)
+    # grafica_resumen_balances(balancesArray, i, strategy_name)
+    grafica_resumen_frec_rel(resumenFrecRel, strategy_name)
 
 
 # Inicio del programa
@@ -440,6 +455,44 @@ if color_elegido == "n":
 else:
     color = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]
     color_elegido = "rojo"
+estrategias = ["m", "d", "f", "o"]
+
+# Directorio base
+directorio_base = "Graficas"
+
+# Estructura del árbol de directorios
+estructura = {
+    "martin_gala": {
+        "finito": {},
+        "infinito": {},
+    },
+    "dalembert_strategy": {
+        "finito": {},
+        "infinito": {},
+    },
+    "fibonacci_strategy": {
+        "finito": {},
+        "infinito": {},
+    },
+    "paroli_strategy": {
+        "finito": {},
+        "infinito": {},
+    },
+}
+
+# Función para crear el árbol de directorios
+
+
+def crear_arbol(directorio, estructura):
+    for nombre, sub_estructura in estructura.items():
+        nuevo_directorio = os.path.join(directorio, nombre)
+        os.makedirs(nuevo_directorio, exist_ok=True)
+        if sub_estructura:
+            crear_arbol(nuevo_directorio, sub_estructura)
+
+
+# Crear el árbol de directorios
+crear_arbol(directorio_base, estructura)
 
 # Parametros ingresados por la consola
 
@@ -450,6 +503,8 @@ else:
     print(initial_capital)
 initial_bet = int(input("Ingrese la apuesta inicial: "))
 
+# for i in range(len(estrategias)):
+#     estrategia = estrategias[i]
 if (estrategia) == "m":
     # Simulación de la estrategia de Martingala
     simulate_game(martingala_strategy, initial_bet, cant_tiradas,
