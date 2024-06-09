@@ -3,55 +3,35 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def glc():
-    semilla = int(input('Ingrese el valor de Xo: '))
+def glc(corridas):
+    semilla = int(input('Ingrese el valor de una semilla: '))
     a = 1664525
     c = 1013904223
     m = 2**32  # 4294967296
 
-    if semilla >= 0:
-        corridas = int(input('Ingrese las corridas a generar: '))
+    resultados = []
 
-        resultados = []
+    for x in range(corridas):
+        subtotal = semilla * a + c
+        pseudoaleatorio = subtotal % m
+        random = pseudoaleatorio / (m - 1)
+        resultados.append((pseudoaleatorio))
+        semilla = pseudoaleatorio
+        print(f"Los resultados son: {resultados[x]}")
+        if pseudoaleatorio == 0:
+            print('Límite del Método.')
+            break
 
-        for x in range(corridas):
-            subtotal = semilla * a + c
-            pseudoaleatorio = subtotal % m
-            random = pseudoaleatorio / (m - 1)
-            print(f'Random: {random}')
-            resultados.append((pseudoaleatorio))
-            semilla = pseudoaleatorio
-
-            if pseudoaleatorio == 0:
-                print('Límite del Método.')
-                break
-
-        return resultados
-    else:
-        print(
-            'Debe proporcionar valores mayores a cero, o que cumplan con los parámetros.')
+    return resultados
 
 
 def metodo_cuadrado():
     semilla = 8477  # VER
     d = 4
-    n = 100
-
-    """
-    Genera una secuencia de números pseudoaleatorios usando el método de cuadrados medios.
-
-    Parámetros:
-    semilla (int): El número inicial o semilla con D dígitos.
-    d (int): La cantidad de dígitos en cada número generado.
-    n (int): La cantidad de números pseudoaleatorios a generar.
-
-    Retorna:
-    list: Una lista de n números pseudoaleatorios generados.
-    """
     resultados = []
     x = semilla
 
-    for _ in range(n):
+    for _ in range(corridas):
         # Elevar al cuadrado y rellenar con ceros si es necesario
         x_cuadrado = str(x ** 2).zfill(2 * d)
         # Extraer D dígitos centrales
@@ -62,7 +42,12 @@ def metodo_cuadrado():
     return resultados
 
 
-resultados = glc()
+if len(sys.argv) != 3:
+    print("Uso: python metodos_pseudoakeatorios.py -n <nro_iteraciones>")
+    sys.exit(1)
+corridas = int(sys.argv[2])
+
+resultados = glc(corridas)
 
 # Convertir la lista de resultados a una matriz 2D (bitmap)
 # Suponiendo una dimensión de 100x100 para la matriz bitmap
@@ -79,7 +64,7 @@ for i in range(len(resultados)):
 bitmap = bitmap / np.max(bitmap)
 
 # Crear el gráfico bitmap
-plt.figure(figsize=(100, 100))
+plt.figure(figsize=(512, 512))
 plt.imshow(bitmap, cmap='gray', interpolation='nearest')
 plt.title('Bitmap de números pseudoaleatorios generados por el método GCL')
 plt.axis('off')  # Ocultar los ejes
