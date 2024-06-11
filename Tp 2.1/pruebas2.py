@@ -1,81 +1,146 @@
-import random
-from PIL import Image
-import array as arr
-import statistics
-import sys
-import math
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import chisquare, kstest
 
-# compurebo que el programa en CLI se use como se debe#
-if len(sys.argv) != 5 or sys.argv[1] != "-s" or sys.argv[3] != "-n":
-    print("Uso: python numeros_psa.py -s <semilla> -n <nro_iteraciones>")
-    sys.exit(1)
-semilla_inicial = int(sys.argv[2])
-corridas = int(sys.argv[4])
-
-sem_ini = str(semilla_inicial)
+# Generador Congruencial Lineal (GCL)
 
 
-def bitmap(resultados, metodo, semilla):
-    x = 0
-    y = 0
-    tam = int(math.sqrt(len(resultados)))
-    img = Image.new('RGB', (tam, tam), "black")
-    pixels = img.load()
-    for i in range(len(resultados)):
-        aux = str(resultados[i])
-        prueba = int(aux[2])
-        if (prueba % 2 == 0):
-            pixels[x, y] = (255, 255, 255)
-        if (y+1 >= 512):
-            y = 0
-            x = x+1
+def gcl(a, c, m, seed, n):
+    numbers = []
+    X = seed
+    for _ in range(n):
+        X = (a * X + c) % m
+        numbers.append(X / m)
+    return numbers
+
+# Método de Cuadrados Medios
+
+
+def cuadrados_medios(seed, n):
+    numbers = []
+    X = seed
+    num_digits = len(str(seed))
+    for _ in range(n):
+        X2 = str(X * X).zfill(2 * num_digits)
+        mid_start = (len(X2) - num_digits) // 2
+        X = int(X2[mid_start:mid_start + num_digits])
+        numbers.append(X / (10 ** num_digits))
+    return numbers
+
+# Generar gráficos de mapas de bits
+
+
+def plot_bitmaps(numbers, title):
+    size = int(np.sqrt(len(numbers)))
+    numbers = numbers[:size*size]
+    matrix = np.reshape(numbers, (size, size))
+    plt.figure(figsize=(6, 6))
+    plt.imshow(matrix, cmap='gray', interpolation='nearest')
+    plt.title(title)
+    plt.axis('off')
+    plt.show()
+
+# Pruebas de aleatoriedad
+# Chi-cuadrado
+
+
+def chi_cuadrado(numbers, bins=10):
+    observed, _ = np.histogram(numbers, bins=bins)
+    expected = len(numbers) / bins
+    chi2, p = chisquare(observed, [expected] * bins)
+    return chi2, p
+
+# Paridad
+
+
+def paridad(numbers):
+    bits = ''.join(f'{int(x * (2 ** 32)) & 0xFFFFFFFF:032b}' for x in numbers)
+    ones = bits.count('1')
+    zeros = bits.count('0')
+    total = len(bits)
+    p = abs(ones - zeros) / total
+    return p
+
+# Póker (Poker Test)
+
+
+def poker(numbers, m=5):
+    # Convertir numeros a string
+    str_numbers = [str(int(x * (10**m))).zfill(m) for x in numbers]
+    counts = {}
+    for num in str_numbers:
+        key = ''.join(sorted(num))
+        if key in counts:
+            counts[key] += 1
         else:
-            y = y+1
-    img.save('bitmap_'+metodo+'_semilla_'+semilla+'.png')
+            counts[key] = 1
+    frequencies = np.array(list(counts.values()))
+    chi2, p = chisquare(frequencies)
+    return chi2, p
+
+# Kolmogorov-Smirnov
 
 
-def glc(semilla):
-    a = 1664525
-    c = 1013904223
-    m = 2**32
-    subtotal = semilla * a + c
-    pseudoaleatorio = subtotal % m
-    random = pseudoaleatorio / (m - 1)
-    return random
+def kolmogorov_smirnov(numbers):
+    d, p = kstest(numbers, 'uniform')
+    return d, p
+
+# Evaluación de pruebas
 
 
-def vonNewman(semilla):
-    s_str = str(semilla*semilla)
-    while len(s_str) != 10:
-        s_str = "0"+s_str
-    n_rand = (int(s_str[2:6]))
-    return n_rand
+def evaluar_pruebas(resultados_pruebas, alpha=0.05):
+    for prueba, (statistic, p_value) in resultados_pruebas.items():
+        if p_value > alpha:
+            print(f"{prueba}: Aprueba (p-value={p_value:.5f})")
+        else:
+            print(f"{prueba}: Rechaza (p-value={p_value:.5f})")
 
 
-def merseneTwister(semilla):
-    random.seed(semilla)
-    return random.random()
+# Parámetros y ejecución
+seed = 973160574
+n = 200000
 
-
-resultados = [(0.0000) for x in range(corridas)]
+# Parametros GCL
+a = 1664525
+c = 1013904223
 m = 2**32
-semilla = glc(semilla_inicial)
-for x in range(corridas):
-    resultados[x] = semilla
-    semilla = glc(semilla*(m - 1))
-bitmap(resultados, 'glc', sem_ini)
 
+gcl_numbers = gcl(a, c, m, seed, n)
+cuadrados_numbers = cuadrados_medios(seed, n)
 
-resultados = [(0.0000) for x in range(corridas)]
-semilla = semilla_inicial
-for x in range(corridas):
-    semilla = merseneTwister(semilla)
-    resultados[x] = semilla
-bitmap(resultados, 'mt', sem_ini)
+plot_bitmaps(gcl_numbers, "GCL Bitmap")
+plot_bitmaps(cuadrados_numbers, "Cuadrados Medios Bitmap")
 
-resultados = [(0.0000) for x in range(corridas)]
-semilla = semilla_inicial
-for x in range(corridas):
-    semilla = vonNewman(semilla)
-    resultados[x] = semilla/10000
-bitmap(resultados, 'vn', sem_ini)
+# Pruebas (Valores)
+print("GCL Tests")
+print("Chi-Cuadrado:", chi_cuadrado(gcl_numbers))
+print("Paridad:", paridad(gcl_numbers))
+print("Poker:", poker(gcl_numbers))
+print("Kolmogorov-Smirnov:", kolmogorov_smirnov(gcl_numbers))
+
+print("\nCuadrados Medios Tests")
+print("Chi-Cuadrado:", chi_cuadrado(cuadrados_numbers))
+print("Paridad:", paridad(cuadrados_numbers))
+print("Poker:", poker(cuadrados_numbers))
+print("Kolmogorov-Smirnov:", kolmogorov_smirnov(cuadrados_numbers))
+
+# Pruebas (aprobado-rechazado)
+resultados_gcl = {
+    "Chi-Cuadrado": chi_cuadrado(gcl_numbers),
+    "Paridad": (None, paridad(gcl_numbers)),
+    "Poker": poker(gcl_numbers),
+    "Kolmogorov-Smirnov": kolmogorov_smirnov(gcl_numbers)
+}
+
+resultados_cuadrados = {
+    "Chi-Cuadrado": chi_cuadrado(cuadrados_numbers),
+    "Paridad": (None, paridad(cuadrados_numbers)),
+    "Poker": poker(cuadrados_numbers),
+    "Kolmogorov-Smirnov": kolmogorov_smirnov(cuadrados_numbers)
+}
+
+print("GCL Tests")
+evaluar_pruebas(resultados_gcl)
+
+print("\nCuadrados Medios Tests")
+evaluar_pruebas(resultados_cuadrados)
