@@ -77,6 +77,22 @@ def funcion_densidad_gamma(x, k_gamma, theta_gamma):
     return gamma.pdf(x, k_gamma, theta_gamma)
 
 
+def funcion_densidad_pascal(x, r_pascal, p_pascal):
+    # Calcula la combinación binomial
+    binomial_coefficient = math.factorial(
+        x + r_pascal - 1) / (math.factorial(x) * math.factorial(r_pascal - 1))
+
+    # Calcula la probabilidad
+    probability = binomial_coefficient * \
+        (p_pascal ** r_pascal) * ((1 - p_pascal) ** x)
+
+    return probability
+
+
+def funcion_densidad_binomial():
+    return
+
+
 def plot_histogram_with_pdf(data, y_dist, x_dist, bins=50, title=''):
     plt.hist(data, bins=bins, density=True, alpha=0.7,
              color='skyblue', edgecolor='black')
@@ -88,6 +104,7 @@ def plot_histogram_with_pdf(data, y_dist, x_dist, bins=50, title=''):
     plt.ylabel('Densidad de Probabilidad')
     plt.legend(['PDF', 'Histograma'])
     plt.grid(axis='y', alpha=0.75)
+    plt.savefig(title + ".png")
     plt.show()
 
 
@@ -117,8 +134,8 @@ plot_histogram_with_pdf(uniform_data, y_values_uniform, x_values_uniform, 50,
 
 exponential_data = generador_exponencial_MTI(n)
 plot_histogram_with_pdf(exponential_data, y_values_exponential, x_values_exponential,
-                        bins=20, title='Histograma y PDF de Distribución Exponencial con MTI')
+                        bins=20, title='Histograma Distribución Exponencial con MTI')
 
 normal_data = generador_normal_MTI(n)
 plot_histogram_with_pdf(normal_data, y_values_normal, x_values_normal,
-                        bins=20, title='Histograma y PDF de Distribución Normal con MTI')
+                        bins=20, title='Histograma Distribución Normal con MTI')
