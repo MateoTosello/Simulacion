@@ -114,19 +114,13 @@ n = 20000
 # Ajusta el rango según la distribución
 x_values_uniform = np.linspace(0, 1, 1000)
 x_values_exponential = np.linspace(0, 10, 1000)
-# x_values_gamma = np.linspace(0, 20, 1000)
 x_values_normal = np.linspace(-4, 4, 1000)
-# x_values_pascal = np.arange(0, 40, 1)  # Rango para la distribución Pascal
-# x_values_binomial = np.arange(0, 20, 1)  # Rango para la distribución binomial
 
 y_values_uniform = [funcion_densidad_uniforme(
     x, 0, 1) for x in x_values_uniform]
 y_values_exponential = [funcion_densidad_exponencial(
     x, 1) for x in x_values_exponential]
-# y_values_gamma = [funcion_densidad_gamma(x, 2, 2) for x in x_values_gamma]
 y_values_normal = [funcion_densidad_normal(x, 0, 1) for x in x_values_normal]
-# y_values_pascal = [pascal_density(x) for x in x_values_pascal]
-# y_values_binomial = [binomial_density(x) for x in x_values_binomial]
 
 uniform_data = generador_uniforme_MTI(n)
 plot_histogram_with_pdf(uniform_data, y_values_uniform, x_values_uniform, 50,

@@ -1,0 +1,9 @@
+Generador;Semilla;Prueba  Chi-Cuadrado;Prueba de Paridad;Prueba de Poker;Prueba de Kolmogorov-Smirnov
+GCL;1718104268 (time);Aprueba;Rechaza;Rechaza;Aprueba
+GCL;759302;Aprueba;Rechaza;Rechaza;Aprueba
+GCL;3183856186;Aprueba;Rechaza;Rechaza;Aprueba
+GCL;796225369226628988;Aprueba;Rechaza;Rechaza;Aprueba
+Cuadrados Medios;1718104268 (time);Rechaza;Rechaza;Rechaza;Rechaza
+Cuadrados Medios;759302;Rechaza;Rechaza;Rechaza;Rechaza
+Cuadrados Medios;3183856186;Rechaza;Rechaza;Rechaza;Rechaza
+Cuadrados Medios;796225369226628988;Aprueba;Rechaza;Rechaza;Aprueba
