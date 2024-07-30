@@ -1,0 +1,1 @@
+#En este documento realizaremos la simulación de un modelo de inventario
