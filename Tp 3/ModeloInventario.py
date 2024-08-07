@@ -70,7 +70,7 @@ def actualizacion_tiempo_promedio_estadisticas():
 
 #---------------------------------------------------------------------------------------------------------------- 
 ### Llegada de un pedido
-def arrivo_orden():
+def arribo_orden():
     global cantidad_pedida_proveedor, nivel_inventario, tiempo_sig_evento
 
     # Incrementar el nivel de inventario por la cantidad pedida
@@ -232,7 +232,7 @@ for _ in range(num_politicas):
             actualizacion_tiempo_promedio_estadisticas()
             # Invocar la función de evento correspondiente
             if (tipo_sig_evento == 1):
-                arrivo_orden()
+                arribo_orden()
             elif tipo_sig_evento == 2:
                 demanda()
             elif tipo_sig_evento == 4:
